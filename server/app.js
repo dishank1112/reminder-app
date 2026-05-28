@@ -24,19 +24,26 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/api/health", (_req, res) => {
+function healthCheck(_req, res) {
   res.json({
     ok: true,
     today: dateStringInTimeZone(new Date(), config.appTimezone),
     timezone: config.appTimezone,
     alertHour: config.reminderAlertHour
   });
-});
+}
+
+app.get("/api/health", healthCheck);
+app.get("/health", healthCheck);
 
 app.use("/api/auth", authRouter);
 app.use("/api/reminders", reminderRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/jobs", jobRouter);
+app.use("/auth", authRouter);
+app.use("/reminders", reminderRouter);
+app.use("/notifications", notificationRouter);
+app.use("/jobs", jobRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });

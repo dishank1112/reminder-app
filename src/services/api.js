@@ -35,7 +35,10 @@ async function request(path, options = {}) {
     return null;
   }
 
-  const payload = await response.json();
+  const contentType = response.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json")
+    ? await response.json()
+    : { message: "API route is not available. Check the backend deployment." };
 
   if (!response.ok) {
     throw new Error(payload.message || "Request failed.");
